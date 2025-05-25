@@ -79,6 +79,9 @@ while (my $line = <$fh_in>) {
     $line =~ s/#e6e9ef/#f2e5bc/ig;
     $line =~ s/#eff1f5/#fbf1c7/ig;
 
+    #Additional
+    $line =~ s/#191724/#ebdbb2/ig;
+
     print $fh_out $line;
 }
 
