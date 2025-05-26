@@ -36,7 +36,9 @@ fi
 echo "Discord downloaded successfully at: $INSTALL_DIR/current"
 
 echo "Installing Vencord"
-chmod a+x ~/applications/discord/VencordInstallerCli-linux
-~/applications/discord/VencordInstallerCli-linux -install -location ~/applications/discord/data/current
+
+curl -sSLf "https://github.com/Vendicated/VencordInstaller/releases/latest/download/VencordInstallerCli-Linux" -o $DOWNLOAD_DIR/vencord
+chmod a+x $DOWNLOAD_DIR/vencord
+$DOWNLOAD_DIR/vencord -install -location $INSTALL_DIR/current
 
 echo "Let's go!!"
