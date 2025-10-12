@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# File: xbps - simplified wrapper for stock xbps
+
+cmd="$1"
+[ "$#" -gt 1 ] && shift
+
+case "$cmd" in
+  i|in|install)
+    sudo xbps-install -S "$@"
+    ;;
+  rm|remove|uninstall)
+    sudo xbps-remove "$@"
+    ;;
+  rmd)
+    # remove with dependencies that are not used elsewhere
+    sudo xbps-remove -Ro "$@"
+    ;;
+  s|se|search)
+    xbps-query -Rs "$@"
+    ;;
+  up|update)
+    sudo xbps-install -Su
+    ;;
+  sync|sy)
+    sudo xbps-install -S
+    ;;
+  q|query)
+    xbps-query "$@"
+    ;;
+  clean)
+    echo "Cleaning XBPS cache..."
+    sudo rm -rvf /var/cache/xbps/*
+    ;;
+  *)
+    echo "xbps - Void Linux xbps syntax made simplified"
+    echo "Usage:"
+    echo "  xbps i|in <pkg>         - install"
+    echo "  xbps rm <pkg>           - remove"
+    echo "  xbps rmd <pkg>          - remove with unused deps"
+    echo "  xbps s|se <pattern>     - search"
+    echo "  xbps up                 - full system update"
+    echo "  xbps sy                 - sync repos"
+    echo "  xbps q <pkg>            - query info"
+    echo "  xbps clean              - clean package cache"
+    ;;
+esac
+
