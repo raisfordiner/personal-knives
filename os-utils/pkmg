@@ -1,0 +1,138 @@
+#!/usr/bin/env sh
+
+# File: pkmg - unified package manager wrapper for popular distros
+
+# Detect package manager
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        ubuntu|debian|linuxmint|pop)
+            PM="apt"
+            INSTALL="sudo apt install"
+            REMOVE="sudo apt remove"
+            REMOVE_DEPS="sudo apt remove --autoremove"
+            SEARCH="apt search"
+            UPDATE="sudo apt update && sudo apt upgrade"
+            SYNC="sudo apt update"
+            QUERY="apt show"
+            CLEAN="sudo apt clean"
+            ;;
+        fedora|rhel|centos)
+            PM="dnf"
+            INSTALL="sudo dnf install"
+            REMOVE="sudo dnf remove"
+            REMOVE_DEPS="sudo dnf remove"
+            SEARCH="dnf search"
+            UPDATE="sudo dnf update"
+            SYNC="dnf check-update"
+            QUERY="dnf info"
+            CLEAN="sudo dnf clean all"
+            ;;
+        arch|manjaro|endeavouros)
+            PM="pacman"
+            INSTALL="sudo pacman -S"
+            REMOVE="sudo pacman -R"
+            REMOVE_DEPS="sudo pacman -Rs"
+            SEARCH="pacman -Ss"
+            UPDATE="sudo pacman -Syu"
+            SYNC="sudo pacman -Sy"
+            QUERY="pacman -Qi"
+            CLEAN="sudo pacman -Sc"
+            ;;
+        opensuse*|sles)
+            PM="zypper"
+            INSTALL="sudo zypper install"
+            REMOVE="sudo zypper remove"
+            REMOVE_DEPS="sudo zypper remove"
+            SEARCH="zypper search"
+            UPDATE="sudo zypper update"
+            SYNC="sudo zypper refresh"
+            QUERY="zypper info"
+            CLEAN="sudo zypper clean"
+            ;;
+        void)
+            PM="xbps"
+            INSTALL="sudo xbps-install -S"
+            REMOVE="sudo xbps-remove"
+            REMOVE_DEPS="sudo xbps-remove -Ro"
+            SEARCH="xbps-query -Rs"
+            UPDATE="sudo xbps-install -Su"
+            SYNC="sudo xbps-install -S"
+            QUERY="xbps-query"
+            CLEAN="sudo rm -rvf /var/cache/xbps/*"
+            ;;
+        alpine)
+            PM="apk"
+            INSTALL="sudo apk add"
+            REMOVE="sudo apk del"
+            REMOVE_DEPS="sudo apk del"
+            SEARCH="apk search"
+            UPDATE="sudo apk update && sudo apk upgrade"
+            SYNC="sudo apk update"
+            QUERY="apk info"
+            CLEAN="sudo apk cache clean"
+            ;;
+        freebsd)
+            PM="pkg"
+            INSTALL="sudo pkg install"
+            REMOVE="sudo pkg delete"
+            REMOVE_DEPS="sudo pkg delete"
+            SEARCH="pkg search"
+            UPDATE="sudo pkg update && sudo pkg upgrade"
+            SYNC="sudo pkg update"
+            QUERY="pkg info"
+            CLEAN="sudo pkg clean"
+            ;;
+        *)
+            echo "Unsupported distro: $ID"
+            exit 1
+            ;;
+    esac
+else
+    echo "Cannot detect distro"
+    exit 1
+fi
+
+cmd="$1"
+[ "$#" -gt 1 ] && shift
+
+case "$cmd" in
+  i|in|install)
+    $INSTALL "$@"
+    ;;
+   rm|remove|uninstall)
+     $REMOVE "$@"
+     ;;
+   rmd|remove-deps)
+     $REMOVE_DEPS "$@"
+     ;;
+   s|se|search)
+    $SEARCH "$@"
+    ;;
+  up|update)
+    $UPDATE
+    ;;
+  sync|sy)
+    $SYNC
+    ;;
+  q|query)
+    $QUERY "$@"
+    ;;
+  clean)
+    echo "Cleaning $PM cache..."
+    $CLEAN
+    ;;
+  *)
+     echo "pkmg - unified package manager wrapper"
+     echo "Detected PM: $PM"
+     echo "Usage:"
+     echo "  pkmg i|in <pkg>         - install"
+     echo "  pkmg rm <pkg>           - remove"
+     echo "  pkmg rmd <pkg>          - remove with dependencies"
+     echo "  pkmg s|se <pattern>     - search"
+     echo "  pkmg up                 - full system update"
+     echo "  pkmg sy                 - sync repos"
+     echo "  pkmg q <pkg>            - query info"
+     echo "  pkmg clean              - clean package cache"
+    ;;
+esac
